@@ -35,13 +35,14 @@ public class Game extends ApplicationAdapter {
 	public static float hearRadius;
 	public boolean gameOver;
 	private long lastTimeSeePlayer;
+	private boolean victory;
 
 	@Override
 	public void create() {
 		w = Gdx.graphics.getWidth();
 		h = Gdx.graphics.getHeight();
 		racio = w / 1920f;
-		hearRadius = 400 * racio;
+		hearRadius = 500 * racio;
 		camera = new OrthographicCamera(30, 30 * (h / w));
 		camera.position.set(w * 0.5f, h * 0.5f, 0);
 		viewport = new ScreenViewport(camera);
@@ -53,22 +54,24 @@ public class Game extends ApplicationAdapter {
 		santa.setCenterY(h / 4);
 		santa.setSpeed(2f);
 		player = new Elf(true);
+		player.setSize(w * 2, w * 2);
 		player.setCenterX(w / 2);
 		player.setCenterY(h * 3 / 4);
 		player.setSpeed(1f);
+		player.setDarkArea(true);
 		prisoners = new ArrayList<Elf>();
 		for (int i = 0; i < 10; i++) {
 			prisoners.add(new Elf());
 		}
 
 		stage = new Stage();
-		stage.addActor(santa);
-		stage.addActor(player);
 		for (Elf elf : prisoners) {
 			elf.setCenterX(random.nextFloat() * w);
 			elf.setCenterY(random.nextFloat() * h);
 			stage.addActor(elf);
 		}
+		stage.addActor(santa);
+		stage.addActor(player);
 
 		music = Gdx.audio.newMusic(Gdx.files.internal("tension.mp3"));
 	}
@@ -78,6 +81,7 @@ public class Game extends ApplicationAdapter {
 		catchInput();
 
 		if (gameOver) {
+			ScreenUtils.clear(0f, 0f, 0f, 1);
 			return;
 		}
 		float santaSpeed = 0.8f;
@@ -120,8 +124,8 @@ public class Game extends ApplicationAdapter {
 
 		// TODO update actor visibility based on distance.
 
-
-		ScreenUtils.clear(1, 1, 1, 1);
+		float red = 0.04f;
+		ScreenUtils.clear(0.9f, 0.9f - red, 0.9f - red, 1);
 		stage.act();
 		stage.draw();
 		boolean haveWin = true;
@@ -139,15 +143,32 @@ public class Game extends ApplicationAdapter {
 		}
 		if (haveLost) {
 			System.out.println("Game over!");
+			victory = false;
 		}
 		if (haveWin) {
 			System.out.println("Game win!");
+			victory = true;
 		}
 		if (haveWin || haveLost) {
 			// dispose();
 			music.stop();
-			Music musicGameOver = Gdx.audio.newMusic(Gdx.files.internal("gameOver.mp3"));
-			musicGameOver.play();
+			String fileName = "";
+			if (victory) {
+				fileName = "win";
+			} else {
+				fileName = "lost";
+			}
+			final Music musicEndGame = Gdx.audio.newMusic(Gdx.files.internal("gameOver.mp3"));
+			final Music musicVictory = Gdx.audio.newMusic(Gdx.files.internal(fileName + ".mp3"));
+			musicEndGame.play();
+			musicEndGame.setOnCompletionListener(new Music.OnCompletionListener() {
+				@Override
+				public void onCompletion(Music music) {
+					musicVictory.play();
+					// TODO display end screen
+				}
+
+			});
 			gameOver = true;
 		}
 	}

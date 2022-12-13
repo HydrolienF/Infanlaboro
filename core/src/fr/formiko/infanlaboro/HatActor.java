@@ -3,10 +3,13 @@ package fr.formiko.infanlaboro;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public class HatActor extends Actor {
@@ -16,6 +19,9 @@ public class HatActor extends Actor {
     private float speed;
     protected float visionRadius;
     protected float wantedRotation;
+    private Texture textureWithDark;
+    private boolean darkArea;
+
 
     public HatActor(int hatRadius, int visionRadius, Color color) {
         this.hatRadius = hatRadius;
@@ -46,6 +52,8 @@ public class HatActor extends Actor {
     public float getWantedRotation() { return wantedRotation; }
     public float getMaxRotationPerSecond() { return 900f; }
     public void setWantedRotation(float wantedRotation) { this.wantedRotation = wantedRotation; }
+    public boolean isDarkArea() { return darkArea; }
+    public void setDarkArea(boolean darkArea) { this.darkArea = darkArea; }
     /**
      * {@summary Move in the facing direction at speed percentOfSpeed.}
      * If a wantedRotation have been set, go for it.
@@ -70,6 +78,8 @@ public class HatActor extends Actor {
      */
     @Override
     public void draw(Batch batch, float parentAlpha) {
+        // TODO do a "bonnet" draw.
+
         batch.end();
         if (shapeRenderer == null) {
             shapeRenderer = new ShapeRenderer();
@@ -78,9 +88,28 @@ public class HatActor extends Actor {
         shapeRenderer.begin(ShapeType.Filled);
         shapeRenderer.setColor(getColor());
         shapeRenderer.circle(getCenterX(), getCenterY(), (float) getHatRadius());
+        float ponponSize = getHatRadius() / 4f;
+        shapeRenderer.end();
+
+        shapeRenderer.begin(ShapeType.Line);
+        // shapeRenderer.setColor(Color.BLACK);
+        shapeRenderer.line(new Vector3(getCenterX() + getHatRadius(), getCenterY(), 0),
+                new Vector3(getCenterX() + ponponSize / 2, getCenterY() + getHatRadius() * 1.5f, 0));
+        shapeRenderer.line(new Vector3(getCenterX() - getHatRadius(), getCenterY(), 0),
+                new Vector3(getCenterX() - ponponSize / 2, getCenterY() + getHatRadius() * 1.5f, 0));
+        // shapeRenderer.line(new Vector3(getCenterX() + 2 * ponponSize, getCenterY() - ponponSize, 0),
+        // new Vector3(getCenterX() + ponponSize / 2, getCenterY() + getHatRadius() / 2, 0));
+        // shapeRenderer.line(new Vector3(getCenterX() - 2 * ponponSize, getCenterY() - ponponSize, 0),
+        // new Vector3(getCenterX() - ponponSize / 2, getCenterY() + getHatRadius() / 2, 0));
+        shapeRenderer.end();
+
+        shapeRenderer.begin(ShapeType.Filled);
+        shapeRenderer.setColor(Color.WHITE);
+        shapeRenderer.circle(getCenterX(), getCenterY() + getHatRadius() * 1.5f, ponponSize);
         shapeRenderer.end();
 
 
+        // debug
         Gdx.gl.glEnable(GL30.GL_BLEND);
         Gdx.gl.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
         if (shapeRenderer == null) {
@@ -88,15 +117,22 @@ public class HatActor extends Actor {
         }
         shapeRenderer.setProjectionMatrix(Game.camera.combined);
         shapeRenderer.begin(ShapeType.Line);
-        shapeRenderer.setColor(new Color(0f, 0f, 1f, parentAlpha * 1f));
-        shapeRenderer.circle(getCenterX(), getCenterY(), (float) getVisionRadius());
-        shapeRenderer.setColor(new Color(1f, 0f, 0f, parentAlpha * 1f));
-        shapeRenderer.circle(getCenterX(), getCenterY(), (float) getHitRadius());
+        // shapeRenderer.setColor(new Color(0f, 0f, 1f, parentAlpha * 1f));
+        // shapeRenderer.circle(getCenterX(), getCenterY(), (float) getVisionRadius());
+        // shapeRenderer.setColor(new Color(1f, 0f, 0f, parentAlpha * 1f));
+        // shapeRenderer.circle(getCenterX(), getCenterY(), (float) getHitRadius());
         shapeRenderer.end();
         Gdx.gl.glDisable(GL30.GL_BLEND);
 
 
         batch.begin();
+        if (isDarkArea()) {
+            Color color = getColor();
+            batch.setColor(color.r, color.g, color.b, color.a * parentAlpha);
+            // Gdx.gl.glColorMask(true, true, true, true);
+            // Gdx.gl.glDepthFunc(GL30.GL_LESS);
+            batch.draw(getMaskedTexture(), getX(), getY(), getWidth(), getHeight());
+        }
     }
 
     public void move(float x, float y) {
@@ -185,4 +221,54 @@ public class HatActor extends Actor {
      * @param v contains coordinate of Point to run away from
      */
     public void runAwayFrom(Vector2 v) { goTo(v, 180f); }
+
+    /**
+     * {@summary Return maskedTexture.}
+     * Default texture is full of color.
+     * It have a circle area to exclude.
+     * 
+     * @return texture without first circle area to exclude
+     */
+    private Texture getMaskedTexture() {
+        if (textureWithDark == null) {
+            // textureWithDark = new Texture(getMaskPixmap((int) visionRadius));
+            textureWithDark = new Texture(Gdx.files.internal("images/darkedArea.png"));
+        }
+        return textureWithDark;
+    }
+
+    /**
+     * {@summary Return pixmap without a centered circle of pixel.}
+     * 
+     * @return pixmap without a centered circle of pixel
+     */
+    private Pixmap getMaskPixmap(int radius) {
+        final int blackLevel = 255; // [0; 255]
+        final float egdeSize = 0.2f;
+
+        Pixmap darkedArea = new Pixmap((int) getWidth(), (int) getHeight(), Pixmap.Format.RGBA8888);
+        int xCenter = (int) (darkedArea.getWidth() / 2);
+        int yCenter = (int) (darkedArea.getHeight() / 2);
+        float edgeLength = radius * egdeSize;
+
+        for (int x = 0; x < darkedArea.getWidth(); x++) {
+            for (int y = 0; y < darkedArea.getHeight(); y++) {
+                int distToCenter = (int) Math.getDistanceBetweenPoints(x, y, xCenter, yCenter);
+                if (distToCenter > radius) {
+                    darkedArea.drawPixel(x, y, blackLevel);
+                } else if (distToCenter > radius - edgeLength) {
+                    float nextToTheEdgess = 1f - (radius - distToCenter) / edgeLength;
+                    darkedArea.drawPixel(x, y, (int) (blackLevel * nextToTheEdgess));
+                }
+            }
+        }
+        // save pixmap
+        // FileHandle fh;
+        // int counter = 0;
+        // do {
+        // fh = new FileHandle("screenshot" + counter++ + ".png");
+        // } while (fh.exists());
+        // PixmapIO.writePNG(fh, darkedArea);
+        return darkedArea;
+    }
 }
