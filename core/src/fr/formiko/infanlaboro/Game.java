@@ -8,10 +8,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -31,11 +35,13 @@ public class Game extends ApplicationAdapter {
 	public static float h;
 	public static float racio;
 	private Music music;
+	private Sound runAwaySound;
 	private boolean playingMusic;
 	public static float hearRadius;
 	public boolean gameOver;
 	private long lastTimeSeePlayer;
 	private boolean victory;
+	private Stage stageEndGame;
 
 	@Override
 	public void create() {
@@ -74,6 +80,7 @@ public class Game extends ApplicationAdapter {
 		stage.addActor(player);
 
 		music = Gdx.audio.newMusic(Gdx.files.internal("tension.mp3"));
+		runAwaySound = Gdx.audio.newSound(Gdx.files.internal("runAway.mp3"));
 	}
 
 	@Override
@@ -82,6 +89,9 @@ public class Game extends ApplicationAdapter {
 
 		if (gameOver) {
 			ScreenUtils.clear(0f, 0f, 0f, 1);
+			if (stageEndGame != null) {
+				stageEndGame.draw();
+			}
 			return;
 		}
 		float santaSpeed = 0.8f;
@@ -131,7 +141,10 @@ public class Game extends ApplicationAdapter {
 		boolean haveWin = true;
 		for (Elf elf : prisoners) {
 			if (elf.hitBoxConnected(player)) {
-				elf.setVisible(false);
+				if (elf.isVisible()) {
+					elf.setVisible(false);
+					runAwaySound.play();
+				}
 			}
 			if (elf.isVisible()) {
 				haveWin = false;
@@ -150,22 +163,36 @@ public class Game extends ApplicationAdapter {
 			victory = true;
 		}
 		if (haveWin || haveLost) {
-			// dispose();
 			music.stop();
 			String fileName = "";
+			String imageFileName = "";
 			if (victory) {
 				fileName = "win";
+				imageFileName = "images/winGame.png";
 			} else {
 				fileName = "lost";
+				imageFileName = "images/Mad santa.png";
 			}
 			final Music musicEndGame = Gdx.audio.newMusic(Gdx.files.internal("gameOver.mp3"));
 			final Music musicVictory = Gdx.audio.newMusic(Gdx.files.internal(fileName + ".mp3"));
+			final Texture endGameFrame = new Texture(imageFileName);
 			musicEndGame.play();
 			musicEndGame.setOnCompletionListener(new Music.OnCompletionListener() {
 				@Override
 				public void onCompletion(Music music) {
+					stageEndGame = new Stage();
+					Actor endGameActor = new Actor() {
+						@Override
+						public void draw(Batch batch, float parentAlpha) { batch.draw(endGameFrame, 0, 0, getWidth(), getHeight()); }
+					};
+					endGameActor.setSize(w, h);
+					stageEndGame.addActor(endGameActor);
 					musicVictory.play();
-					// TODO display end screen
+					musicVictory.setOnCompletionListener(new Music.OnCompletionListener() {
+						@Override
+						public void onCompletion(Music music) { stageEndGame = null; }
+
+					});
 				}
 
 			});
