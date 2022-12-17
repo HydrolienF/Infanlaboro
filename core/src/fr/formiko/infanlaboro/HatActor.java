@@ -3,7 +3,6 @@ package fr.formiko.infanlaboro;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -254,38 +253,4 @@ public class HatActor extends Actor {
         return textureWithDark;
     }
 
-    /**
-     * {@summary Return pixmap without a centered circle of pixel.}
-     * 
-     * @return pixmap without a centered circle of pixel
-     */
-    private Pixmap getMaskPixmap(int radius) {
-        final int blackLevel = 255; // [0; 255]
-        final float egdeSize = 0.2f;
-
-        Pixmap darkedArea = new Pixmap((int) getWidth(), (int) getHeight(), Pixmap.Format.RGBA8888);
-        int xCenter = (int) (darkedArea.getWidth() / 2);
-        int yCenter = (int) (darkedArea.getHeight() / 2);
-        float edgeLength = radius * egdeSize;
-
-        for (int x = 0; x < darkedArea.getWidth(); x++) {
-            for (int y = 0; y < darkedArea.getHeight(); y++) {
-                int distToCenter = (int) Math.getDistanceBetweenPoints(x, y, xCenter, yCenter);
-                if (distToCenter > radius) {
-                    darkedArea.drawPixel(x, y, blackLevel);
-                } else if (distToCenter > radius - edgeLength) {
-                    float nextToTheEdgess = 1f - (radius - distToCenter) / edgeLength;
-                    darkedArea.drawPixel(x, y, (int) (blackLevel * nextToTheEdgess));
-                }
-            }
-        }
-        // save pixmap
-        // FileHandle fh;
-        // int counter = 0;
-        // do {
-        // fh = new FileHandle("screenshot" + counter++ + ".png");
-        // } while (fh.exists());
-        // PixmapIO.writePNG(fh, darkedArea);
-        return darkedArea;
-    }
 }
