@@ -15,7 +15,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -27,7 +26,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class Game extends ApplicationAdapter {
-	private SpriteBatch batch;
 	static OrthographicCamera camera;
 	private Viewport viewport;
 	private Stage stage;
@@ -65,7 +63,6 @@ public class Game extends ApplicationAdapter {
 		camera = new OrthographicCamera(30, 30 * (h / w));
 		camera.position.set(w * 0.5f, h * 0.5f, 0);
 		viewport = new ScreenViewport(camera);
-		batch = new SpriteBatch();
 
 		startDialog(0);
 
@@ -244,8 +241,8 @@ public class Game extends ApplicationAdapter {
 	}
 
 	private void catchInput() {
-		float moveX = 0;
-		float moveY = 0;
+		// float moveX = 0;
+		// float moveY = 0;
 		// float speed = player.getSpeed() * racio;
 		// if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
 		// moveY += speed;
