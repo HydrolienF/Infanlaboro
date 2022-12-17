@@ -61,7 +61,7 @@ public class HatActor extends Actor {
      * @param percentOfSpeed percent of max speed.
      */
     public void moveFront(float percentOfSpeed) {
-        float distance = getSpeed() * percentOfSpeed * SPEED_MODIFIER;
+        float distance = getSpeed() * percentOfSpeed * SPEED_MODIFIER * (Gdx.graphics.getDeltaTime() * 60f);
         float facingAngle = getRotation() + 90;
         translate((float) (distance * java.lang.Math.cos(java.lang.Math.toRadians(facingAngle))),
                 (float) (distance * java.lang.Math.sin(java.lang.Math.toRadians(facingAngle))));

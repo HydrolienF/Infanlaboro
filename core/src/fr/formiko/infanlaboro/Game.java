@@ -49,13 +49,17 @@ public class Game extends ApplicationAdapter {
 	private int idDialog;
 	private Label.LabelStyle style;
 	private Label label;
-	private final String language = System.getProperty("user.language");
+	public String language = "";
 
 	@Override
 	public void create() {
 		// full screen
-		Graphics.DisplayMode currentMode = Gdx.graphics.getDisplayMode();
-		Gdx.graphics.setFullscreenMode(currentMode);
+		try {
+			Graphics.DisplayMode currentMode = Gdx.graphics.getDisplayMode();
+			Gdx.graphics.setFullscreenMode(currentMode);
+		} catch (Exception e) {
+			Gdx.app.log("Init", "Fail to set full screen");
+		}
 		w = Gdx.graphics.getWidth();
 		h = Gdx.graphics.getHeight();
 		racio = w / 1920f;

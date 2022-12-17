@@ -1,5 +1,6 @@
 package fr.formiko.infanlaboro;
 
+import java.awt.Toolkit;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 
@@ -11,10 +12,13 @@ public class DesktopLauncher {
 		config.setTitle("Infanlaboro");
 		// config.setFullscreenMode(Gdx.graphics.getDisplayMode());
 		// Gdx.graphics.setDisplayMode(1280, 720, true);
-		config.setWindowedMode(1600, 900);
+		config.setWindowedMode((int) Toolkit.getDefaultToolkit().getScreenSize().getWidth(),
+				(int) Toolkit.getDefaultToolkit().getScreenSize().getHeight());
 		config.useVsync(true);
 		config.setTitle("Elf-Slavery");
 		config.setWindowIcon("images/Blue hat gnome.png");
-		new Lwjgl3Application(new Game(), config);
+		Game game = new Game();
+		game.language = System.getProperty("user.language");
+		new Lwjgl3Application(game, config);
 	}
 }
