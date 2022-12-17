@@ -21,6 +21,7 @@ public class HatActor extends Actor {
     protected float wantedRotation;
     private Texture textureWithDark;
     private boolean darkArea;
+    private static final float SPEED_MODIFIER = 2f;
 
 
     public HatActor(int hatRadius, int visionRadius, Color color) {
@@ -61,7 +62,7 @@ public class HatActor extends Actor {
      * @param percentOfSpeed percent of max speed.
      */
     public void moveFront(float percentOfSpeed) {
-        float distance = getSpeed() * percentOfSpeed;
+        float distance = getSpeed() * percentOfSpeed * SPEED_MODIFIER;
         float facingAngle = getRotation() + 90;
         translate((float) (distance * java.lang.Math.cos(java.lang.Math.toRadians(facingAngle))),
                 (float) (distance * java.lang.Math.sin(java.lang.Math.toRadians(facingAngle))));
@@ -89,23 +90,39 @@ public class HatActor extends Actor {
         shapeRenderer.setColor(getColor());
         shapeRenderer.circle(getCenterX(), getCenterY(), (float) getHatRadius());
         float ponponSize = getHatRadius() / 4f;
-        shapeRenderer.end();
 
+        float hatLength = 1.7f;
+        float hatWidth = getHatRadius() / 2;
+
+        shapeRenderer.end();
         shapeRenderer.begin(ShapeType.Line);
-        // shapeRenderer.setColor(Color.BLACK);
-        shapeRenderer.line(new Vector3(getCenterX() + getHatRadius(), getCenterY(), 0),
-                new Vector3(getCenterX() + ponponSize / 2, getCenterY() + getHatRadius() * 1.5f, 0));
-        shapeRenderer.line(new Vector3(getCenterX() - getHatRadius(), getCenterY(), 0),
-                new Vector3(getCenterX() - ponponSize / 2, getCenterY() + getHatRadius() * 1.5f, 0));
-        // shapeRenderer.line(new Vector3(getCenterX() + 2 * ponponSize, getCenterY() - ponponSize, 0),
-        // new Vector3(getCenterX() + ponponSize / 2, getCenterY() + getHatRadius() / 2, 0));
-        // shapeRenderer.line(new Vector3(getCenterX() - 2 * ponponSize, getCenterY() - ponponSize, 0),
-        // new Vector3(getCenterX() - ponponSize / 2, getCenterY() + getHatRadius() / 2, 0));
-        shapeRenderer.end();
 
+        shapeRenderer.setColor(Color.BLACK);
+        shapeRenderer.circle(getCenterX(), getCenterY(), (float) getHatRadius());
+
+        shapeRenderer.end();
         shapeRenderer.begin(ShapeType.Filled);
+
+        shapeRenderer.setColor(getColor());
+        shapeRenderer.triangle(getCenterX() + hatWidth, getCenterY(), getCenterX() + ponponSize / 3,
+                getCenterY() + getHatRadius() * hatLength, getCenterX() - hatWidth, getCenterY());
+        shapeRenderer.triangle(getCenterX() + hatWidth, getCenterY(), getCenterX() - ponponSize / 3,
+                getCenterY() + getHatRadius() * hatLength, getCenterX() - hatWidth, getCenterY());
+
+        shapeRenderer.end();
+        shapeRenderer.begin(ShapeType.Line);
+
+        shapeRenderer.setColor(Color.BLACK);
+        shapeRenderer.line(new Vector3(getCenterX() + hatWidth, getCenterY(), 0),
+                new Vector3(getCenterX() + ponponSize / 3, getCenterY() + getHatRadius() * hatLength, 0));
+        shapeRenderer.line(new Vector3(getCenterX() - hatWidth, getCenterY(), 0),
+                new Vector3(getCenterX() - ponponSize / 3, getCenterY() + getHatRadius() * hatLength, 0));
+
+        shapeRenderer.end();
+        shapeRenderer.begin(ShapeType.Filled);
+
         shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.circle(getCenterX(), getCenterY() + getHatRadius() * 1.5f, ponponSize);
+        shapeRenderer.circle(getCenterX(), getCenterY() + getHatRadius() * hatLength, ponponSize);
         shapeRenderer.end();
 
 

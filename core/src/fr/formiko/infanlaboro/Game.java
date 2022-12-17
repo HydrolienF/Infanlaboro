@@ -6,7 +6,6 @@ import java.util.Random;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Music;
@@ -52,9 +51,13 @@ public class Game extends ApplicationAdapter {
 	private int idDialog;
 	private Label.LabelStyle style;
 	private Label label;
+	private final String language = System.getProperty("user.language");
 
 	@Override
 	public void create() {
+		// full screen
+		Graphics.DisplayMode currentMode = Gdx.graphics.getDisplayMode();
+		Gdx.graphics.setFullscreenMode(currentMode);
 		w = Gdx.graphics.getWidth();
 		h = Gdx.graphics.getHeight();
 		racio = w / 1920f;
@@ -256,14 +259,14 @@ public class Game extends ApplicationAdapter {
 		// if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
 		// moveX += speed;
 		// }
-		if (Gdx.input.isKeyPressed(Input.Keys.F11)) {
-			Boolean fullScreen = Gdx.graphics.isFullscreen();
-			Graphics.DisplayMode currentMode = Gdx.graphics.getDisplayMode();
-			if (fullScreen == true)
-				Gdx.graphics.setWindowedMode(currentMode.width, currentMode.height);
-			else
-				Gdx.graphics.setFullscreenMode(currentMode);
-		}
+		// if (Gdx.input.isKeyPressed(Input.Keys.F11)) {
+		// Boolean fullScreen = Gdx.graphics.isFullscreen();
+		// Graphics.DisplayMode currentMode = Gdx.graphics.getDisplayMode();
+		// if (fullScreen == true)
+		// Gdx.graphics.setWindowedMode(currentMode.width, currentMode.height);
+		// else
+		// Gdx.graphics.setFullscreenMode(currentMode);
+		// }
 		// player.move(moveX, moveY);
 		// return moveX != 0 || moveY != 0;
 	}
@@ -289,23 +292,23 @@ public class Game extends ApplicationAdapter {
 		switch (id) {
 		case 0:
 			gameOver = false;
-			setCurentDialog("Santa ! No more slavery !\nHere is our demands, we want 1 day off per months, be paid ...", "Blue hat gnome");
+			setCurentDialog(getText(id), "Blue hat gnome");
 			musicDialog = Gdx.audio.newMusic(Gdx.files.internal("gameOver.mp3"));
 			musicDialog.setLooping(true);
 			musicDialog.play();
 			break;
 		case 1:
-			setCurentDialog("Rhohoho ! I will crush this little insolent elf.", "misterious santa");
+			setCurentDialog(getText(id), "misterious santa");
 			break;
 		case 2:
-			setCurentDialog(
-					"Santa have become crazy & have tie up all other elves. \nHelp them to escape. Don't be seen,\nor if you do stop running he only see moving things.",
-					"Blue hat gnome");
+			setCurentDialog(getText(id), "Blue hat gnome");
+			break;
+		case 3:
+			setCurentDialog(null, null);
+			musicDialog.stop();
 			break;
 
 		default:
-			setCurentDialog(null, null);
-			musicDialog.stop();
 			break;
 		}
 	}
@@ -321,7 +324,7 @@ public class Game extends ApplicationAdapter {
 		}
 		stage = new Stage(viewport);
 		if (style == null) {
-			BitmapFont bmf = new BitmapFont(Gdx.files.internal("fonts/font.fnt"));
+			BitmapFont bmf = new BitmapFont(Gdx.files.internal("fonts/fontFull.fnt"));
 			style = new Label.LabelStyle(bmf, Color.WHITE);
 		}
 		label = new Label(text, style);
@@ -341,5 +344,30 @@ public class Game extends ApplicationAdapter {
 		table.add(speakerActor).expandX();
 		table.add(label).expandX();
 		stage.addActor(table);
+	}
+
+	private String getText(int id) {
+		switch (id) {
+		case 0:
+			if (language.equals("fr")) {
+				return "Père Noël ! Fini l'esclavage !\nVoici nos revendications, nous voulons 1 jour de congé par mois, être payé ...";
+			} else {
+				return "Santa ! No more slavery !\nHere is our demands, we want 1 day off per months, be paid ...";
+			}
+		case 1:
+			if (language.equals("fr")) {
+				return "Rhoohoho ! Je vais écraser ce petit lutin insolent.";
+			} else {
+				return "Rhohoho ! I will crush this little insolent elf.";
+			}
+		case 2:
+			if (language.equals("fr")) {
+				return "Père Noël a perdu la tête et a attaché tous les autres elfes.\nAidez-les à s'échapper. Ne vous faites pas voir,\nou si vous êtes vu, arrêtez de courir, il ne voit que les choses en mouvement.";
+			} else {
+				return "Santa have become crazy & have tie up all other elves. \nHelp them to escape. Don't be seen,\nor if you do stop running he only see moving things.";
+			}
+		default:
+			return null;
+		}
 	}
 }
