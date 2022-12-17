@@ -5,8 +5,6 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
 import com.badlogic.gdx.backends.gwt.GwtGraphics;
-import com.badlogic.gdx.backends.gwt.preloader.Preloader;
-import com.google.gwt.core.client.GWT;
 
 public class HtmlLauncher extends GwtApplication {
 
@@ -21,14 +19,14 @@ public class HtmlLauncher extends GwtApplication {
         cfg.padVertical = 0;
         return cfg;
     }
-    @Override
-    public Preloader.PreloaderCallback getPreloaderCallback() {
-        try {
-            return createPreloaderPanel(GWT.getHostPageBaseURL() + "images/Blue hat gnome.png");
-        } catch (Exception e) {
-            return super.getPreloaderCallback();
-        }
-    }
+    // @Override
+    // public Preloader.PreloaderCallback getPreloaderCallback() {
+    // try {
+    // return createPreloaderPanel(GWT.getHostPageBaseURL() + "images/Blue hat gnome.png");
+    // } catch (Exception e) {
+    // return super.getPreloaderCallback();
+    // }
+    // }
 
     @Override
     public ApplicationListener createApplicationListener() { return new Game(); }
