@@ -55,6 +55,9 @@ public class Game extends ApplicationAdapter {
 	private Music musicVictory;
 	private long over1Time;
 	private long over2Time;
+	private boolean over1;
+	private boolean over2;
+	private boolean haveWinGame;
 
 	@Override
 	public void create() {
@@ -116,14 +119,17 @@ public class Game extends ApplicationAdapter {
 
 		if (gameOver) {
 			ScreenUtils.clear(0f, 0f, 0f, 1);
-			if (over1Time < System.currentTimeMillis()) {
+			if (over1Time < System.currentTimeMillis() && over1 == false) {
 				drawStageEndGame = true;
 				musicVictory.play();
+				over1 = true;
 			}
-			if (over2Time < System.currentTimeMillis()) {
+			if (over2Time < System.currentTimeMillis() && over2 == false) {
 				stageEndGame = null;
 				idDialog = 0;
-				startDialog(idDialog);
+				if (!haveWinGame) {
+					startDialog(idDialog);
+				}
 			}
 
 			if (stageEndGame != null && drawStageEndGame) {
@@ -217,7 +223,6 @@ public class Game extends ApplicationAdapter {
 				fileName = "lost";
 				imageFileName = "images/Mad santa.png";
 			}
-			final boolean haveWinFinal = haveWin;
 			musicEndGame = Gdx.audio.newMusic(Gdx.files.internal("gameOver.mp3"));
 			musicVictory = Gdx.audio.newMusic(Gdx.files.internal(fileName + ".mp3"));
 			final Texture endGameFrame = new Texture(imageFileName);
@@ -234,12 +239,15 @@ public class Game extends ApplicationAdapter {
 			over1Time = System.currentTimeMillis() + 5000;
 			if (haveWin) {
 				over2Time = System.currentTimeMillis() + 18000;
+				haveWinGame = true;
 			} else {
 				over2Time = System.currentTimeMillis() + 8000;
 			}
 			haveWin = false;
 			haveLost = false;
 			gameOver = true;
+			over1 = false;
+			over2 = false;
 		}
 	}
 
