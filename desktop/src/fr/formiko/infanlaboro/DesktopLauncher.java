@@ -12,6 +12,9 @@ public class DesktopLauncher {
 		// config.setFullscreenMode(Gdx.graphics.getDisplayMode());
 		// Gdx.graphics.setDisplayMode(1280, 720, true);
 		config.setWindowedMode(1600, 900);
+		config.useVsync(true);
+		config.setTitle("Elf-Slavery");
+		config.setWindowIcon("images/Blue hat gnome.png");
 		new Lwjgl3Application(new Game(), config);
 	}
 }
