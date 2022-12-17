@@ -110,22 +110,3 @@ jobs:
         launcher-extension: 'deb'
         deb-maintainer-email: 'hydrolien.f@gmail.com'
         uuid: ${{ env.UUID }}
-
-  MacArtifact:
-    if: github.event.pull_request.merged == true
-    needs: releaseJob
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: LauncherJar
-      uses: HydrolienF/LauncherJar@0.1.77
-      with:
-        project-name: ${{ env.ARTIFACT_NAME }}
-        user-name: ${{ env.USER_NAME }}
-        launcher-jar-version: 0.1.77
-        GITHUB_TOKEN: ${{ github.token }}
-        release-url: ${{ needs.releaseJob.outputs.upload_url }}
-        app-version: ${{ needs.releaseJob.outputs.version }}
-        launcher-extension: 'dmg'
-        uuid: ${{ env.UUID }}
