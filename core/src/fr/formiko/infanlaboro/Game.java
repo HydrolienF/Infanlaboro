@@ -49,13 +49,22 @@ public class Game extends ApplicationAdapter {
 	private int idDialog;
 	private Label.LabelStyle style;
 	private Label label;
-	private final String language = System.getProperty("user.language");
+	public String language = "";
+	public boolean drawStageEndGame;
+	private Music musicEndGame;
+	private Music musicVictory;
+	private long over1Time;
+	private long over2Time;
 
 	@Override
 	public void create() {
 		// full screen
-		Graphics.DisplayMode currentMode = Gdx.graphics.getDisplayMode();
-		Gdx.graphics.setFullscreenMode(currentMode);
+		try {
+			Graphics.DisplayMode currentMode = Gdx.graphics.getDisplayMode();
+			Gdx.graphics.setFullscreenMode(currentMode);
+		} catch (Exception e) {
+			Gdx.app.log("Init", "Fail to set full screen");
+		}
 		w = Gdx.graphics.getWidth();
 		h = Gdx.graphics.getHeight();
 		racio = w / 1920f;
@@ -107,7 +116,17 @@ public class Game extends ApplicationAdapter {
 
 		if (gameOver) {
 			ScreenUtils.clear(0f, 0f, 0f, 1);
-			if (stageEndGame != null) {
+			if (over1Time < System.currentTimeMillis()) {
+				drawStageEndGame = true;
+				musicVictory.play();
+			}
+			if (over2Time < System.currentTimeMillis()) {
+				stageEndGame = null;
+				idDialog = 0;
+				startDialog(idDialog);
+			}
+
+			if (stageEndGame != null && drawStageEndGame) {
 				stageEndGame.draw();
 			}
 			return;
@@ -199,35 +218,25 @@ public class Game extends ApplicationAdapter {
 				imageFileName = "images/Mad santa.png";
 			}
 			final boolean haveWinFinal = haveWin;
-			final Music musicEndGame = Gdx.audio.newMusic(Gdx.files.internal("gameOver.mp3"));
-			final Music musicVictory = Gdx.audio.newMusic(Gdx.files.internal(fileName + ".mp3"));
+			musicEndGame = Gdx.audio.newMusic(Gdx.files.internal("gameOver.mp3"));
+			musicVictory = Gdx.audio.newMusic(Gdx.files.internal(fileName + ".mp3"));
 			final Texture endGameFrame = new Texture(imageFileName);
 			musicEndGame.play();
-			musicEndGame.setOnCompletionListener(new Music.OnCompletionListener() {
+
+			drawStageEndGame = false;
+			stageEndGame = new Stage();
+			Actor endGameActor = new Actor() {
 				@Override
-				public void onCompletion(Music music) {
-					stageEndGame = new Stage();
-					Actor endGameActor = new Actor() {
-						@Override
-						public void draw(Batch batch, float parentAlpha) { batch.draw(endGameFrame, 0, 0, getWidth(), getHeight()); }
-					};
-					endGameActor.setSize(w, h);
-					stageEndGame.addActor(endGameActor);
-					musicVictory.play();
-					musicVictory.setOnCompletionListener(new Music.OnCompletionListener() {
-						@Override
-						public void onCompletion(Music music) {
-							if (!haveWinFinal) {
-								stageEndGame = null;
-								idDialog = 0;
-								startDialog(idDialog);
-							}
-						}
-
-					});
-				}
-
-			});
+				public void draw(Batch batch, float parentAlpha) { batch.draw(endGameFrame, 0, 0, getWidth(), getHeight()); }
+			};
+			endGameActor.setSize(w, h);
+			stageEndGame.addActor(endGameActor);
+			over1Time = System.currentTimeMillis() + 5000;
+			if (haveWin) {
+				over2Time = System.currentTimeMillis() + 18000;
+			} else {
+				over2Time = System.currentTimeMillis() + 8000;
+			}
 			haveWin = false;
 			haveLost = false;
 			gameOver = true;
