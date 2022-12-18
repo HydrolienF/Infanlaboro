@@ -198,7 +198,8 @@ public class Game extends ApplicationAdapter {
 		santa.moveFront(santaSpeed);
 		// if have been move to avoid wall
 		if (santa.moveIn(w, h)) {
-			santa.setRotation(santa.getRotation() + (160f + (random.nextFloat() * 40)) % 360f);
+			// santa.setRotation(santa.getRotation() + (160f + (random.nextFloat() * 40)) % 360f);
+			santa.goTo(new Vector2(player.getCenterX(), player.getCenterY()));
 		}
 
 
