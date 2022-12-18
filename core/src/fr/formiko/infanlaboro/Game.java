@@ -184,6 +184,10 @@ public class Game extends ApplicationAdapter {
 			lastTimeSeePlayer = System.currentTimeMillis();
 		}
 		long durationSinceLastSeePlayer = System.currentTimeMillis() - lastTimeSeePlayer;
+		if (player.see(santa) && !haveMove && durationSinceLastSeePlayer > 4000) {
+			lastTimeSeePlayer = System.currentTimeMillis() - 1000;
+			durationSinceLastSeePlayer = System.currentTimeMillis() - lastTimeSeePlayer;
+		}
 		// System.out.println(durationSinceLastSeePlayer);
 		if (durationSinceLastSeePlayer > 300 && durationSinceLastSeePlayer < 2000) {
 			santaSpeed = 0f;
