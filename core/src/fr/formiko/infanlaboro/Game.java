@@ -92,6 +92,7 @@ public class Game extends ApplicationAdapter {
 		santa.setCenterX(w / 2);
 		santa.setCenterY(h / 4);
 		santa.setSpeed(2f);
+		santa.setRotation(200);
 		player = new Elf(true);
 		player.setSize(w * 2, w * 2);
 		player.setCenterX(w / 2);
@@ -178,6 +179,8 @@ public class Game extends ApplicationAdapter {
 		if (!santa.see(player)) {
 			if (random.nextFloat() > 0.95) {
 				santa.setRotation(santa.getRotation() + (random.nextFloat() * 40) - 20);
+			} else if (random.nextFloat() > 0.99) {
+				santa.goTo(new Vector2(player.getCenterX(), player.getCenterY()));
 			}
 		}
 		if (santa.see(player) && haveMove) {
@@ -198,8 +201,8 @@ public class Game extends ApplicationAdapter {
 		santa.moveFront(santaSpeed);
 		// if have been move to avoid wall
 		if (santa.moveIn(w, h)) {
-			// santa.setRotation(santa.getRotation() + (160f + (random.nextFloat() * 40)) % 360f);
-			santa.goTo(new Vector2(player.getCenterX(), player.getCenterY()));
+			santa.setRotation(santa.getRotation() + (160f + (random.nextFloat() * 40)) % 360f);
+			// santa.goTo(new Vector2(player.getCenterX(), player.getCenterY()));
 		}
 
 
