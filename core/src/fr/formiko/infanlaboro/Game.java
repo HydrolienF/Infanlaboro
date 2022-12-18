@@ -184,6 +184,10 @@ public class Game extends ApplicationAdapter {
 			lastTimeSeePlayer = System.currentTimeMillis();
 		}
 		long durationSinceLastSeePlayer = System.currentTimeMillis() - lastTimeSeePlayer;
+		if (player.see(santa) && !haveMove && durationSinceLastSeePlayer > 4000) {
+			lastTimeSeePlayer = System.currentTimeMillis() - 1000;
+			durationSinceLastSeePlayer = System.currentTimeMillis() - lastTimeSeePlayer;
+		}
 		// System.out.println(durationSinceLastSeePlayer);
 		if (durationSinceLastSeePlayer > 300 && durationSinceLastSeePlayer < 2000) {
 			santaSpeed = 0f;
@@ -194,7 +198,8 @@ public class Game extends ApplicationAdapter {
 		santa.moveFront(santaSpeed);
 		// if have been move to avoid wall
 		if (santa.moveIn(w, h)) {
-			santa.setRotation(santa.getRotation() + (160f + (random.nextFloat() * 40)) % 360f);
+			// santa.setRotation(santa.getRotation() + (160f + (random.nextFloat() * 40)) % 360f);
+			santa.goTo(new Vector2(player.getCenterX(), player.getCenterY()));
 		}
 
 
@@ -349,6 +354,7 @@ public class Game extends ApplicationAdapter {
 			savedPrisoner = 0;
 			setCurentDialog(null, null);
 			musicDialog.stop();
+			Gdx.input.setCursorPosition((int) player.getCenterX(), (int) (h - player.getCenterY()));
 			break;
 
 		default:
