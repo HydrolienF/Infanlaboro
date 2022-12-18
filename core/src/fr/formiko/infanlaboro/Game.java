@@ -65,7 +65,7 @@ public class Game extends ApplicationAdapter {
 		// full screen
 		try {
 			Graphics.DisplayMode currentMode = Gdx.graphics.getDisplayMode();
-			// Gdx.graphics.setFullscreenMode(currentMode);
+			Gdx.graphics.setFullscreenMode(currentMode);
 		} catch (Exception e) {
 			Gdx.app.log("Init", "Fail to set full screen");
 		}
