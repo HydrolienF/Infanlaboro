@@ -59,6 +59,8 @@ public class Game extends ApplicationAdapter {
 	private boolean over2;
 	private boolean haveWinGame;
 	private int savedPrisoner;
+	private Actor endGameActor1;
+	private Actor endGameActor2;
 
 	@Override
 	public void create() {
@@ -135,7 +137,8 @@ public class Game extends ApplicationAdapter {
 		if (gameOver) {
 			ScreenUtils.clear(0f, 0f, 0f, 1);
 			if (over1Time < System.currentTimeMillis() && over1 == false) {
-				drawStageEndGame = true;
+				stageEndGame = new Stage();
+				stageEndGame.addActor(endGameActor2);
 				musicVictory.play();
 				over1 = true;
 			}
@@ -247,12 +250,19 @@ public class Game extends ApplicationAdapter {
 
 			drawStageEndGame = false;
 			stageEndGame = new Stage();
-			Actor endGameActor = new Actor() {
+			endGameActor1 = new Actor() {
+				@Override
+				public void draw(Batch batch, float parentAlpha) {
+					batch.draw(new Texture("images/running away.png"), 0, 0, getWidth(), getHeight());
+				}
+			};
+			endGameActor1.setSize(w, h);
+			stageEndGame.addActor(endGameActor1);
+			endGameActor2 = new Actor() {
 				@Override
 				public void draw(Batch batch, float parentAlpha) { batch.draw(endGameFrame, 0, 0, getWidth(), getHeight()); }
 			};
-			endGameActor.setSize(w, h);
-			stageEndGame.addActor(endGameActor);
+			endGameActor2.setSize(w, h);
 			over1Time = System.currentTimeMillis() + 5000;
 			if (haveWin) {
 				over2Time = System.currentTimeMillis() + 18000;
@@ -265,6 +275,7 @@ public class Game extends ApplicationAdapter {
 			gameOver = true;
 			over1 = false;
 			over2 = false;
+			drawStageEndGame = true;
 		}
 	}
 
