@@ -147,7 +147,7 @@ public class HatActor extends Actor {
             batch.setColor(color.r, color.g, color.b, color.a * parentAlpha);
             // Gdx.gl.glColorMask(true, true, true, true);
             // Gdx.gl.glDepthFunc(GL30.GL_LESS);
-            // batch.draw(getMaskedTexture(), getX(), getY(), getWidth(), getHeight());
+            batch.draw(getMaskedTexture(), getX(), getY(), getWidth(), getHeight());
         }
     }
 
