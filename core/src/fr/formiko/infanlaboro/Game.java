@@ -349,6 +349,7 @@ public class Game extends ApplicationAdapter {
 			savedPrisoner = 0;
 			setCurentDialog(null, null);
 			musicDialog.stop();
+			Gdx.input.setCursorPosition((int) player.getCenterX(), (int) (h - player.getCenterY()));
 			break;
 
 		default:
