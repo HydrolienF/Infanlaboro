@@ -58,13 +58,14 @@ public class Game extends ApplicationAdapter {
 	private boolean over1;
 	private boolean over2;
 	private boolean haveWinGame;
+	private int savedPrisoner;
 
 	@Override
 	public void create() {
 		// full screen
 		try {
 			Graphics.DisplayMode currentMode = Gdx.graphics.getDisplayMode();
-			Gdx.graphics.setFullscreenMode(currentMode);
+			// Gdx.graphics.setFullscreenMode(currentMode);
 		} catch (Exception e) {
 			Gdx.app.log("Init", "Fail to set full screen");
 		}
@@ -108,6 +109,20 @@ public class Game extends ApplicationAdapter {
 		}
 		stage.addActor(santa);
 		stage.addActor(player);
+
+		if (style == null) {
+			BitmapFont bmf = new BitmapFont(Gdx.files.internal("fonts/fontFull.fnt"));
+			style = new Label.LabelStyle(bmf, Color.WHITE);
+		}
+		label = new Label("0/10", style);
+
+		// define a table used to organize our hud's labels
+		Table table = new Table();
+		table.add(label);
+		table.setSize(100, 100);
+		table.setX(w - 100);
+		table.setY(h - 100);
+		stage.addActor(table);
 
 		music = Gdx.audio.newMusic(Gdx.files.internal("tension.mp3"));
 		runAwaySound = Gdx.audio.newSound(Gdx.files.internal("runAway.mp3"));
@@ -194,6 +209,8 @@ public class Game extends ApplicationAdapter {
 				if (elf.isVisible()) {
 					elf.setVisible(false);
 					runAwaySound.play();
+					savedPrisoner++;
+					label.setText(savedPrisoner + "/10");
 				}
 			}
 			if (elf.isVisible()) {
@@ -318,6 +335,7 @@ public class Game extends ApplicationAdapter {
 			setCurentDialog(getText(id), "Blue hat gnome");
 			break;
 		case 3:
+			savedPrisoner = 0;
 			setCurentDialog(null, null);
 			musicDialog.stop();
 			break;
